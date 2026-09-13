@@ -3,87 +3,344 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Control de Rutina Nocturna</title>
+    <title>Asistente de Rutina Nocturna & Emociones</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .pulse-avatar {
+            animation: pulse 2.5s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(129, 140, 248, 0.7); }
+            70% { transform: scale(1.03); box-shadow: 0 0 0 15px rgba(129, 140, 248, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(129, 140, 248, 0); }
+        }
+    </style>
 </head>
-<body class="bg-slate-900 text-white min-h-screen p-4">
+<body class="bg-slate-900 text-white min-h-screen p-4 pb-16 font-sans">
     <div class="max-w-md mx-auto space-y-6">
         
-        <!-- Encabezado y Estado -->
-        <header class="text-center py-4 bg-slate-800 rounded-xl shadow-lg border border-slate-700">
-            <h1 class="text-xl font-bold text-indigo-400">Mi Rutina & Consultoría</h1>
-            <p id="reloj" class="text-2xl font-mono mt-1"></p>
-            <div id="mensaje-motivacional" class="mt-3 text-sm italic text-slate-300 px-4"></div>
+        <!-- Header con Reloj -->
+        <header class="text-center py-4 bg-slate-800 rounded-2xl shadow-xl border border-slate-700">
+            <h1 class="text-xs uppercase tracking-widest text-indigo-400 font-bold">Tu Asistente Personal</h1>
+            <p id="reloj" class="text-3xl font-mono mt-1 text-emerald-400 font-bold"></p>
+            <p id="fecha-hoy" class="text-xs text-slate-400 mt-0.5"></p>
         </header>
 
-        <!-- Checklist de Hábitos -->
-        <section class="bg-slate-800 p-4 rounded-xl border border-slate-700">
-            <h2 class="font-semibold text-lg mb-3 text-emerald-400">Hábitos Diarios</h2>
+        <!-- Avatar Asistente Tipo Alexa -->
+        <section class="bg-gradient-to-b from-slate-800 to-indigo-950/40 p-5 rounded-2xl border border-indigo-500/30 text-center space-y-4 shadow-lg">
+            <div class="relative w-24 h-24 mx-auto flex items-center justify-center">
+                <div class="w-20 h-20 bg-indigo-600 rounded-full flex items-center justify-center pulse-avatar shadow-indigo-500/50 shadow-lg cursor-pointer" onclick="hablarMensajeActual()">
+                    <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/>
+                    </svg>
+                </div>
+            </div>
+            
             <div class="space-y-2">
-                <label class="flex items-center space-x-3 bg-slate-700/50 p-2 rounded">
-                    <input type="checkbox" class="w-5 h-5 accent-emerald-500">
+                <span class="inline-block bg-indigo-500/20 text-indigo-300 text-xs px-3 py-1 rounded-full border border-indigo-500/30" id="tag-asistente">Asistente Activo</span>
+                <p id="mensaje-asistente" class="text-sm text-slate-200 leading-relaxed font-medium min-h-[50px] flex items-center justify-center px-2">
+                    "Hola. Presiona el micrófono o revisa tus recordatorios del turno."
+                </p>
+            </div>
+
+            <div class="flex justify-center gap-2 pt-1">
+                <button onclick="hablarMensajeActual()" class="bg-indigo-600 hover:bg-indigo-500 text-xs px-4 py-2 rounded-xl flex items-center gap-1.5 font-medium transition">
+                    🔊 Escuchar Asistente
+                </button>
+            </div>
+        </section>
+
+        <!-- Registro Emocional y Estado Físico -->
+        <section class="bg-slate-800 p-4 rounded-2xl border border-slate-700 space-y-3 shadow-md">
+            <h2 class="font-semibold text-base text-amber-400 flex items-center gap-2">
+                💬 ¿Cómo te sientes en este momento?
+            </h2>
+            
+            <div class="grid grid-cols-4 gap-2">
+                <button onclick="registrarEstado('Energizada', '⚡')" class="bg-slate-700/60 hover:bg-emerald-600/30 border border-slate-600 p-2.5 rounded-xl text-center text-xs transition">
+                    <div class="text-xl mb-1">⚡</div>
+                    <span>Energizada</span>
+                </button>
+                <button onclick="registrarEstado('Tranquila', '🌱')" class="bg-slate-700/60 hover:bg-indigo-600/30 border border-slate-600 p-2.5 rounded-xl text-center text-xs transition">
+                    <div class="text-xl mb-1">🌱</div>
+                    <span>Tranquila</span>
+                </button>
+                <button onclick="registrarEstado('Cansada', '😴')" class="bg-slate-700/60 hover:bg-amber-600/30 border border-slate-600 p-2.5 rounded-xl text-center text-xs transition">
+                    <div class="text-xl mb-1">😴</div>
+                    <span>Cansada</span>
+                </button>
+                <button onclick="registrarEstado('Estresada', '🤯')" class="bg-slate-700/60 hover:bg-rose-600/30 border border-slate-600 p-2.5 rounded-xl text-center text-xs transition">
+                    <div class="text-xl mb-1">🤯</div>
+                    <span>Estresada</span>
+                </button>
+            </div>
+
+            <div class="pt-2">
+                <input type="text" id="nota-emocional" placeholder="Añadir una nota breve (ej. Me duele la espalda)..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-indigo-400">
+            </div>
+            
+            <div id="ultimo-registro" class="text-xs text-slate-400 italic pt-1 hidden"></div>
+        </section>
+
+        <!-- Checklist de Hábitos -->
+        <section class="bg-slate-800 p-4 rounded-2xl border border-slate-700 space-y-3 shadow-md">
+            <div class="flex justify-between items-center">
+                <h2 class="font-semibold text-base text-emerald-400">✅ Check-in Diario</h2>
+                <button onclick="guardarProgresoHoy()" class="bg-emerald-600 hover:bg-emerald-500 text-xs px-3 py-1.5 rounded-lg font-medium transition">
+                    Guardar Estado
+                </button>
+            </div>
+            
+            <div class="space-y-2 text-xs" id="lista-habitos">
+                <label class="flex items-center space-x-3 bg-slate-900/60 p-2.5 rounded-xl border border-slate-700/50 cursor-pointer">
+                    <input type="checkbox" class="habito-check w-4 h-4 accent-emerald-500">
                     <span>Dormir 7.5 hrs (10:00 AM - 5:30 PM)</span>
                 </label>
-                <label class="flex items-center space-x-3 bg-slate-700/50 p-2 rounded">
-                    <input type="checkbox" class="w-5 h-5 accent-emerald-500">
-                    <span>Ejercicio de 30-40 min</span>
+                <label class="flex items-center space-x-3 bg-slate-900/60 p-2.5 rounded-xl border border-slate-700/50 cursor-pointer">
+                    <input type="checkbox" class="habito-check w-4 h-4 accent-emerald-500">
+                    <span>30-40 min Ejercicio / Estiramiento</span>
                 </label>
-                <label class="flex items-center space-x-3 bg-slate-700/50 p-2 rounded">
-                    <input type="checkbox" class="w-5 h-5 accent-emerald-500">
+                <label class="flex items-center space-x-3 bg-slate-900/60 p-2.5 rounded-xl border border-slate-700/50 cursor-pointer">
+                    <input type="checkbox" class="habito-check w-4 h-4 accent-emerald-500">
+                    <span>Comida Saludable + Agua suficiente</span>
+                </label>
+                <label class="flex items-center space-x-3 bg-slate-900/60 p-2.5 rounded-xl border border-slate-700/50 cursor-pointer">
+                    <input type="checkbox" class="habito-check w-4 h-4 accent-emerald-500">
                     <span>Junta de Consultoría con Hermano</span>
                 </label>
-                <label class="flex items-center space-x-3 bg-slate-700/50 p-2 rounded">
-                    <input type="checkbox" class="w-5 h-5 accent-emerald-500">
+                <label class="flex items-center space-x-3 bg-slate-900/60 p-2.5 rounded-xl border border-slate-700/50 cursor-pointer">
+                    <input type="checkbox" class="habito-check w-4 h-4 accent-emerald-500">
                     <span>30 min de Inglés / Lectura</span>
                 </label>
-                <label class="flex items-center space-x-3 bg-slate-700/50 p-2 rounded">
-                    <input type="checkbox" class="w-5 h-5 accent-emerald-500">
-                    <span>Corte de cafeína (3:00 AM)</span>
+                <label class="flex items-center space-x-3 bg-slate-900/60 p-2.5 rounded-xl border border-slate-700/50 cursor-pointer">
+                    <input type="checkbox" class="habito-check w-4 h-4 accent-emerald-500">
+                    <span>Corte estricto de cafeína (3:00 AM)</span>
                 </label>
             </div>
         </section>
 
-        <!-- Recomendaciones Rápidas -->
-        <section class="bg-slate-800 p-4 rounded-xl border border-slate-700">
-            <h2 class="font-semibold text-lg mb-2 text-amber-400">Sugerencia Actual</h2>
-            <p id="sugerencia-comida" class="text-sm text-slate-300"></p>
+        <!-- Resumen del Día y Feedback -->
+        <section class="bg-slate-800 p-4 rounded-2xl border border-slate-700 space-y-3 shadow-md">
+            <div class="flex justify-between items-center">
+                <h2 class="font-semibold text-base text-indigo-400">📋 Resumen y Feedback Diario</h2>
+                <button onclick="generarResumen()" class="bg-indigo-600 hover:bg-indigo-500 text-xs px-3 py-1.5 rounded-lg font-medium transition">
+                    Generar Resumen
+                </button>
+            </div>
+
+            <div id="caja-resumen" class="bg-slate-900/80 p-3.5 rounded-xl border border-slate-700/80 text-xs text-slate-300 leading-relaxed min-h-[70px]">
+                Presiona "Generar Resumen" para recibir tu balance diario y consejos personalizados de tu asistente.
+            </div>
+        </section>
+
+        <!-- Gráfica de Progreso y Borrado -->
+        <section class="bg-slate-800 p-4 rounded-2xl border border-slate-700 space-y-3 shadow-md">
+            <div class="flex justify-between items-center">
+                <h2 class="font-semibold text-base text-purple-400">📈 Histórico de Cumplimiento</h2>
+                <button onclick="borrarHistorial()" class="bg-rose-600/80 hover:bg-rose-600 text-xs px-2.5 py-1 rounded-lg text-white transition">
+                    Borrar Datos
+                </button>
+            </div>
+            <div class="w-full h-44">
+                <canvas id="graficaProgreso"></canvas>
+            </div>
         </section>
 
     </div>
 
     <script>
-        function actualizarSistema() {
+        let ultimoMensajeTexto = "";
+
+        function hablar(texto) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel(); // Cancelar locuciones previas
+                const utterance = new SpeechSynthesisUtterance(texto);
+                utterance.lang = 'es-MX';
+                utterance.rate = 0.95;
+                utterance.pitch = 1.0;
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        function hablarMensajeActual() {
+            if (ultimoMensajeTexto) {
+                hablar(ultimoMensajeTexto);
+            }
+        }
+
+        function actualizarAsistente() {
             const ahora = new Date();
             const horas = ahora.getHours();
             const minutos = ahora.getMinutes().toString().padStart(2, '0');
+            
             document.getElementById('reloj').innerText = `${horas}:${minutos}`;
+            
+            const opcionesFecha = { weekday: 'long', day: 'numeric', month: 'long' };
+            document.getElementById('fecha-hoy').innerText = ahora.toLocaleDateString('es-MX', opcionesFecha);
 
             let mensaje = "";
-            let sugerencia = "";
+            let tag = "Asistente Activo";
 
             if (horas >= 9 && horas < 10) {
-                mensaje = "😴 ¡Llegaste a casa! Desayuna ligero, desconecta pantallas y descansa.";
-                sugerencia = "Comida: Omelette con espinacas o yogur griego con nueces.";
+                tag = "⏰ Hora de Desconectar";
+                mensaje = "Hola. Ya es hora de descansar. Desayuna algo ligero como huevo con espinacas o yogur, apaga pantallas y entra a tu cuarto totalmente oscuro. ¡Descansa bien!";
             } else if (horas >= 17 && horas < 19) {
-                mensaje = "🏋️‍♀️ ¡Tiempo de activarte! Haz 30 min de ejercicio e hidrátate.";
-                sugerencia = "Comida: Pechuga a la plancha con arroz integral y verduras.";
+                tag = "🏋️‍♀️ Activación Física";
+                mensaje = "¡Buenos días/tardes! Es hora de levantarte. Haz 30 o 40 minutos de ejercicio para enviarle la señal a tu cuerpo de que ya amaneció. ¡Vamos con todo!";
             } else if (horas >= 19 && horas < 21) {
-                mensaje = "💼 Modo Empresaria. Revisa avances de la consultoría y repasa tu inglés.";
-                sugerencia = "Actividad: Junta de 45 min con tu hermano + 30 min de inglés.";
+                tag = "💼 Modo Consultoría e Inglés";
+                mensaje = "Es momento de construir tu libertad. Reúnete con tu hermano para revisar los contactos de la consultoría y dedica 30 minutos a repasar inglés.";
             } else if (horas >= 3 && horas < 5) {
-                mensaje = "🚫☕ Recuerda: Corta la cafeína ahora para garantizar un sueño reparador en la mañana.";
-                sugerencia = "Snack: Un puño de almendras y agua fría o té sin teína.";
+                tag = "🚫☕ Alerta de Cafeína";
+                mensaje = "¡Atención! Corta la cafeína a partir de este momento. Cambia por agua o té de limón sin teína para que puedas dormir profundo al terminar el turno.";
             } else {
-                mensaje = "💪 Cada paso en tu turno te acerca a consolidar tu consultoría.";
-                sugerencia = "Mantente hidratada durante el turno.";
+                tag = "💪 Turno Nocturno";
+                mensaje = "Recuerda que este turno en Coca-Cola es temporal. Cada día de disciplina te acerca más a consolidar tu consultoría. ¡Tú puedes!";
             }
 
-            document.getElementById('mensaje-motivacional').innerText = mensaje;
-            document.getElementById('sugerencia-comida').innerText = sugerencia;
+            if (ultimoMensajeTexto !== mensaje) {
+                ultimoMensajeTexto = mensaje;
+                document.getElementById('mensaje-asistente').innerText = `"${mensaje}"`;
+                document.getElementById('tag-asistente').innerText = tag;
+            }
         }
 
-        setInterval(actualizarSistema, 1000);
-        actualizarSistema();
+        setInterval(actualizarAsistente, 5000);
+        actualizarAsistente();
+
+        // Registro de Emociones
+        function registrarEstado(emocion, emoji) {
+            const nota = document.getElementById('nota-emocional').value.trim();
+            const ahora = new Date();
+            const horaStr = `${ahora.getHours()}:${ahora.getMinutes().toString().padStart(2, '0')}`;
+            
+            const registro = {
+                emocion: emocion,
+                emoji: emoji,
+                nota: nota,
+                hora: horaStr,
+                fecha: ahora.toLocaleDateString('es-MX')
+            };
+
+            let registros = JSON.parse(localStorage.getItem('registrosEmocionales')) || [];
+            registros.push(registro);
+            localStorage.setItem('registrosEmocionales', JSON.stringify(registros));
+
+            document.getElementById('nota-emocional').value = '';
+            
+            const elemUltimo = document.getElementById('ultimo-registro');
+            elemUltimo.classList.remove('hidden');
+            elemUltimo.innerText = `Registrado a las ${horaStr}: ${emoji} ${emocion} ${nota ? '(' + nota + ')' : ''}`;
+
+            let respuestaVoz = `Registrado: te sientes ${emocion}. `;
+            if (emocion === 'Cansada' || emocion === 'Estresada') {
+                respuestaVoz += "Recuerda respirar hondo, tomar agua e ir a tu ritmo sin autoexigirte de más.";
+            } else {
+                respuestaVoz += "¡Qué buena energía! Aprovecha esa motivación para tus metas.";
+            }
+            hablar(respuestaVoz);
+        }
+
+        // Resumen del Día
+        function generarResumen() {
+            const checkboxes = document.querySelectorAll('.habito-check');
+            let marcados = 0;
+            checkboxes.forEach(chk => { if (chk.checked) marcados++; });
+            let porcentaje = Math.round((marcados / checkboxes.length) * 100);
+
+            let registros = JSON.parse(localStorage.getItem('registrosEmocionales')) || [];
+            const hoyStr = new Date().toLocaleDateString('es-MX');
+            let emocionesHoy = registros.filter(r => r.fecha === hoyStr);
+
+            let resumenTexto = `<strong>Cumplimiento de Hábitos:</strong> ${porcentaje}% (${marcados} de ${checkboxes.length})<br>`;
+            
+            if (emocionesHoy.length > 0) {
+                let ult = emocionesHoy[emocionesHoy.length - 1];
+                resumenTexto += `<strong>Estado Emocional Reciente:</strong> ${ult.emoji} ${ult.emocion}<br>`;
+            }
+
+            resumenTexto += `<br><strong>Mensaje del Asistente:</strong><br>`;
+
+            let mensajeVoz = "";
+            if (porcentaje >= 80) {
+                resumenTexto += "🌟 ¡Excelente jornada! Has mantenido una disciplina impecable a pesar del turno nocturno. Sigue protegiendo tus horas de sueño para sostener este nivel de energía.";
+                mensajeVoz = `Lograste un ${porcentaje} por ciento de tus hábitos. Excelente trabajo. Sigue así y protege tu descanso.`;
+            } else if (porcentaje >= 50) {
+                resumenTexto += "⚖️ Buen avance hoy. Lograste sostener lo fundamental. Si sientes cansancio, prioriza el descanso y la hidratación antes que forzar tareas secundarias.";
+                mensajeVoz = `Llevas un ${porcentaje} por ciento de cumplimiento. Vas por buen camino, recuerda priorizar tu descanso.`;
+            } else {
+                resumenTexto += "🌱 Días difíciles siempre ocurren en el turno de noche. No te juzgues. Enfócate solo en dormir tus 7.5 horas y mañana reiniciamos con calma.";
+                mensajeVoz = "Hoy fue un día pesado. No te preocupes. Lo más importante ahora es que descanses bien y recuperes energía.";
+            }
+
+            document.getElementById('caja-resumen').innerHTML = resumenTexto;
+            hablar(mensajeVoz);
+        }
+
+        // Gráfica de Progreso
+        let historialDatos = JSON.parse(localStorage.getItem('historialRutina')) || [0, 0, 0, 0, 0, 0, 0];
+        let etiquetasDias = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+
+        const ctx = document.getElementById('graficaProgreso').getContext('2d');
+        const miGrafica = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: etiquetasDias,
+                datasets: [{
+                    label: '% Cumplimiento',
+                    data: historialDatos,
+                    borderColor: '#a855f7',
+                    backgroundColor: 'rgba(168, 85, 247, 0.15)',
+                    fill: true,
+                    tension: 0.35,
+                    pointRadius: 4,
+                    pointBackgroundColor: '#a855f7'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { min: 0, max: 100, ticks: { color: '#94a3b8' } },
+                    x: { ticks: { color: '#94a3b8' } }
+                },
+                plugins: { legend: { display: false } }
+            }
+        });
+
+        function guardarProgresoHoy() {
+            const checkboxes = document.querySelectorAll('.habito-check');
+            let marcados = 0;
+            checkboxes.forEach(chk => { if (chk.checked) marcados++; });
+            
+            let porcentaje = Math.round((marcados / checkboxes.length) * 100);
+            
+            historialDatos.shift();
+            historialDatos.push(porcentaje);
+            
+            localStorage.setItem('historialRutina', JSON.stringify(historialDatos));
+            miGrafica.update();
+            
+            hablar(`Progreso guardado. Tu cumplimiento de hoy es del ${porcentaje} por ciento.`);
+            generarResumen();
+        }
+
+        function borrarHistorial() {
+            if (confirm("¿Quieres borrar todo el historial y reiniciar tus registros?")) {
+                historialDatos = [0, 0, 0, 0, 0, 0, 0];
+                localStorage.removeItem('historialRutina');
+                localStorage.removeItem('registrosEmocionales');
+                miGrafica.data.datasets[0].data = historialDatos;
+                miGrafica.update();
+
+                document.querySelectorAll('.habito-check').forEach(chk => chk.checked = false);
+                document.getElementById('caja-resumen').innerText = 'Presiona "Generar Resumen" para recibir tu balance diario y consejos personalizados de tu asistente.';
+                document.getElementById('ultimo-registro').classList.add('hidden');
+                
+                hablar("Historial y registros borrados correctamente.");
+            }
+        }
     </script>
 </body>
 </html>
