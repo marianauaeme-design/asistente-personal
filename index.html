@@ -3,95 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rutina & Consultoría - Dashboard</title>
-    <!-- Tailwind CSS -->
+    <title>Control de Rutina Nocturna</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Chart.js para las gráficas de progreso -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body class="bg-slate-900 text-white min-h-screen p-4 pb-12">
+<body class="bg-slate-900 text-white min-h-screen p-4">
     <div class="max-w-md mx-auto space-y-6">
         
-        <!-- Encabezado y Estado de Rutina -->
+        <!-- Encabezado y Estado -->
         <header class="text-center py-4 bg-slate-800 rounded-xl shadow-lg border border-slate-700">
             <h1 class="text-xl font-bold text-indigo-400">Mi Rutina & Consultoría</h1>
-            <p id="reloj" class="text-3xl font-mono mt-1 text-emerald-400"></p>
+            <p id="reloj" class="text-2xl font-mono mt-1"></p>
             <div id="mensaje-motivacional" class="mt-3 text-sm italic text-slate-300 px-4"></div>
         </header>
 
-        <!-- Sugerencia Inteligente del Momento -->
+        <!-- Checklist de Hábitos -->
         <section class="bg-slate-800 p-4 rounded-xl border border-slate-700">
-            <h2 class="font-semibold text-lg mb-1 text-amber-400">💡 Sugerencia Actual</h2>
-            <p id="sugerencia-comida" class="text-sm text-slate-300"></p>
-        </section>
-
-        <!-- Checklist de Hábitos Diarios -->
-        <section class="bg-slate-800 p-4 rounded-xl border border-slate-700">
-            <div class="flex justify-between items-center mb-3">
-                <h2 class="font-semibold text-lg text-emerald-400">Hábitos de Hoy</h2>
-                <button onclick="guardarProgresoHoy()" class="bg-indigo-600 hover:bg-indigo-500 text-xs px-3 py-1.5 rounded font-medium">
-                    Guardar Día
-                </button>
-            </div>
-            
-            <div class="space-y-2 text-sm" id="lista-habitos">
-                <label class="flex items-center space-x-3 bg-slate-700/50 p-2.5 rounded">
-                    <input type="checkbox" class="habito-check w-5 h-5 accent-emerald-500">
+            <h2 class="font-semibold text-lg mb-3 text-emerald-400">Hábitos Diarios</h2>
+            <div class="space-y-2">
+                <label class="flex items-center space-x-3 bg-slate-700/50 p-2 rounded">
+                    <input type="checkbox" class="w-5 h-5 accent-emerald-500">
                     <span>Dormir 7.5 hrs (10:00 AM - 5:30 PM)</span>
                 </label>
-                <label class="flex items-center space-x-3 bg-slate-700/50 p-2.5 rounded">
-                    <input type="checkbox" class="habito-check w-5 h-5 accent-emerald-500">
-                    <span>30-40 min de Ejercicio</span>
+                <label class="flex items-center space-x-3 bg-slate-700/50 p-2 rounded">
+                    <input type="checkbox" class="w-5 h-5 accent-emerald-500">
+                    <span>Ejercicio de 30-40 min</span>
                 </label>
-                <label class="flex items-center space-x-3 bg-slate-700/50 p-2.5 rounded">
-                    <input type="checkbox" class="habito-check w-5 h-5 accent-emerald-500">
-                    <span>Alimentación Balanceada</span>
+                <label class="flex items-center space-x-3 bg-slate-700/50 p-2 rounded">
+                    <input type="checkbox" class="w-5 h-5 accent-emerald-500">
+                    <span>Junta de Consultoría con Hermano</span>
                 </label>
-                <label class="flex items-center space-x-3 bg-slate-700/50 p-2.5 rounded">
-                    <input type="checkbox" class="habito-check w-5 h-5 accent-emerald-500">
-                    <span>Junta Consultoría con Hermano</span>
+                <label class="flex items-center space-x-3 bg-slate-700/50 p-2 rounded">
+                    <input type="checkbox" class="w-5 h-5 accent-emerald-500">
+                    <span>30 min de Inglés / Lectura</span>
                 </label>
-                <label class="flex items-center space-x-3 bg-slate-700/50 p-2.5 rounded">
-                    <input type="checkbox" class="habito-check w-5 h-5 accent-emerald-500">
-                    <span>30 min Inglés / Lectura</span>
-                </label>
-                <label class="flex items-center space-x-3 bg-slate-700/50 p-2.5 rounded">
-                    <input type="checkbox" class="habito-check w-5 h-5 accent-emerald-500">
-                    <span>Corte de Cafeína (3:00 AM)</span>
+                <label class="flex items-center space-x-3 bg-slate-700/50 p-2 rounded">
+                    <input type="checkbox" class="w-5 h-5 accent-emerald-500">
+                    <span>Corte de cafeína (3:00 AM)</span>
                 </label>
             </div>
         </section>
 
-        <!-- Módulo de Gráfica de Progreso -->
+        <!-- Recomendaciones Rápidas -->
         <section class="bg-slate-800 p-4 rounded-xl border border-slate-700">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="font-semibold text-lg text-indigo-400">📈 Tu Progreso Semanal</h2>
-                <button onclick="borrarHistorial()" class="bg-rose-600 hover:bg-rose-500 text-xs px-2.5 py-1 rounded text-white">
-                    Borrar Datos
-                </button>
-            </div>
-            <div class="w-full h-48">
-                <canvas id="graficaProgreso"></canvas>
-            </div>
-        </section>
-
-        <!-- Apartado Compartido de Consultoría (Tu Hermano y Tú) -->
-        <section class="bg-slate-800 p-4 rounded-xl border border-slate-700 space-y-3">
-            <h2 class="font-semibold text-lg text-amber-400">💼 Registro de Consultoría</h2>
-            <div class="flex gap-2">
-                <input type="text" id="nuevo-prospecto" placeholder="Ej. PYME / Cliente contactado..." class="flex-1 bg-slate-700 border border-slate-600 rounded px-3 py-1.5 text-sm focus:outline-none focus:border-indigo-400">
-                <button onclick="agregarProspecto()" class="bg-amber-600 hover:bg-amber-500 text-xs px-3 py-1.5 rounded font-medium">Añadir</button>
-            </div>
-            <ul id="lista-prospectos" class="space-y-1 text-sm text-slate-300">
-                <!-- Se llenará dinámicamente -->
-            </ul>
+            <h2 class="font-semibold text-lg mb-2 text-amber-400">Sugerencia Actual</h2>
+            <p id="sugerencia-comida" class="text-sm text-slate-300"></p>
         </section>
 
     </div>
 
     <script>
-        // Lógica de Reloj y Mensajes Inteligentes
-        function actualizarReloj() {
+        function actualizarSistema() {
             const ahora = new Date();
             const horas = ahora.getHours();
             const minutos = ahora.getMinutes().toString().padStart(2, '0');
@@ -101,119 +62,28 @@
             let sugerencia = "";
 
             if (horas >= 9 && horas < 10) {
-                mensaje = "😴 ¡Llegaste a casa! Desayuna algo ligero, apaga pantallas y entra a tu cuarto a descansar.";
-                sugerencia = "Nutrición: Omelette con espinacas o yogur griego con almendras.";
+                mensaje = "😴 ¡Llegaste a casa! Desayuna ligero, desconecta pantallas y descansa.";
+                sugerencia = "Comida: Omelette con espinacas o yogur griego con nueces.";
             } else if (horas >= 17 && horas < 19) {
-                mensaje = "🏋️‍♀️ ¡Tiempo de activarte! Haz 30-40 min de ejercicio e hidrátate bien.";
-                sugerencia = "Comida: Pechuga a la plancha con arroz integral y vegetales al vapor.";
+                mensaje = "🏋️‍♀️ ¡Tiempo de activarte! Haz 30 min de ejercicio e hidrátate.";
+                sugerencia = "Comida: Pechuga a la plancha con arroz integral y verduras.";
             } else if (horas >= 19 && horas < 21) {
-                mensaje = "💼 Modo Empresaria. Revisa con tu hermano las llamadas del día y repasa tu inglés.";
-                sugerencia = "Acción: Junta estratégica de 45 min + 30 min de inglés técnico.";
+                mensaje = "💼 Modo Empresaria. Revisa avances de la consultoría y repasa tu inglés.";
+                sugerencia = "Actividad: Junta de 45 min con tu hermano + 30 min de inglés.";
             } else if (horas >= 3 && horas < 5) {
-                mensaje = "🚫☕ ¡Corta la cafeína ahora! Tu cuerpo te lo agradecerá al terminar el turno.";
-                sugerencia = "Snack Nocturno: Un puñado de nueces y suficiente agua tibia o fría.";
+                mensaje = "🚫☕ Recuerda: Corta la cafeína ahora para garantizar un sueño reparador en la mañana.";
+                sugerencia = "Snack: Un puño de almendras y agua fría o té sin teína.";
             } else {
-                mensaje = "💪 Tu esfuerzo nocturno es temporal; estás construyendo tu libertad con la consultoría.";
-                sugerencia = "Mantente enfocada e hidratada durante el turno nocturno.";
+                mensaje = "💪 Cada paso en tu turno te acerca a consolidar tu consultoría.";
+                sugerencia = "Mantente hidratada durante el turno.";
             }
 
             document.getElementById('mensaje-motivacional').innerText = mensaje;
             document.getElementById('sugerencia-comida').innerText = sugerencia;
         }
 
-        setInterval(actualizarReloj, 1000);
-        actualizarReloj();
-
-        // Lógica de la Gráfica de Progreso (Chart.js + LocalStorage)
-        let historialDatos = JSON.parse(localStorage.getItem('historialRutina')) || [0, 0, 0, 0, 0, 0, 0];
-        let etiquetasDias = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
-
-        const ctx = document.getElementById('graficaProgreso').getContext('2d');
-        const miGrafica = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: etiquetasDias,
-                datasets: [{
-                    label: '% de Cumplimiento',
-                    data: historialDatos,
-                    borderColor: '#818cf8',
-                    backgroundColor: 'rgba(129, 140, 248, 0.2)',
-                    fill: true,
-                    tension: 0.3
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: { min: 0, max: 100, ticks: { color: '#94a3b8' } },
-                    x: { ticks: { color: '#94a3b8' } }
-                },
-                plugins: { legend: { display: false } }
-            }
-        });
-
-        function guardarProgresoHoy() {
-            const checkboxes = document.querySelectorAll('.habito-check');
-            let marcados = 0;
-            checkboxes.forEach(chk => { if (chk.checked) marcados++; });
-            
-            let porcentaje = Math.round((marcados / checkboxes.length) * 100);
-            
-            // Agregar al historial de la gráfica
-            historialDatos.shift();
-            historialDatos.push(porcentaje);
-            
-            localStorage.setItem('historialRutina', JSON.stringify(historialDatos));
-            miGrafica.update();
-            alert(`¡Día guardado con ${porcentaje}% de avance! 💪`);
-        }
-
-        function borrarHistorial() {
-            if (confirm("¿Estás segura de que quieres borrar todos los datos de progreso?")) {
-                historialDatos = [0, 0, 0, 0, 0, 0, 0];
-                localStorage.removeItem('historialRutina');
-                miGrafica.data.datasets[0].data = historialDatos;
-                miGrafica.update();
-
-                // Desmarcar checkboxes
-                document.querySelectorAll('.habito-check').forEach(chk => chk.checked = false);
-            }
-        }
-
-        // Lógica Simple para Lista de Prospectos de Consultoría
-        let prospectos = JSON.parse(localStorage.getItem('prospectos')) || [];
-
-        function renderProspectos() {
-            const lista = document.getElementById('lista-prospectos');
-            lista.innerHTML = '';
-            prospectos.forEach((p, index) => {
-                lista.innerHTML += `
-                    <li class="flex justify-between items-center bg-slate-700/40 px-3 py-1.5 rounded">
-                        <span>• ${p}</span>
-                        <button onclick="eliminarProspecto(${index})" class="text-rose-400 text-xs">✕</button>
-                    </li>
-                `;
-            });
-        }
-
-        function agregarProspecto() {
-            const input = document.getElementById('nuevo-prospecto');
-            if (input.value.trim() !== '') {
-                prospectos.push(input.value.trim());
-                localStorage.setItem('prospectos', JSON.stringify(prospectos));
-                input.value = '';
-                renderProspectos();
-            }
-        }
-
-        function eliminarProspecto(index) {
-            prospectos.splice(index, 1);
-            localStorage.setItem('prospectos', JSON.stringify(prospectos));
-            renderProspectos();
-        }
-
-        renderProspectos();
+        setInterval(actualizarSistema, 1000);
+        actualizarSistema();
     </script>
 </body>
 </html>
