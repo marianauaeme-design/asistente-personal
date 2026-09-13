@@ -40,7 +40,7 @@
             <div class="space-y-2">
                 <span class="inline-block bg-indigo-500/20 text-indigo-300 text-xs px-3 py-1 rounded-full border border-indigo-500/30" id="tag-asistente">Asistente Activo</span>
                 <p id="mensaje-asistente" class="text-sm text-slate-200 leading-relaxed font-medium min-h-[50px] flex items-center justify-center px-2">
-                    "Hola. Presiona el micrófono o revisa tus recordatorios del turno."
+                    "Hola. Presiona el icono o el botón para escuchar tus recordatorios."
                 </p>
             </div>
 
@@ -107,7 +107,7 @@
                 </label>
                 <label class="flex items-center space-x-3 bg-slate-900/60 p-2.5 rounded-xl border border-slate-700/50 cursor-pointer">
                     <input type="checkbox" class="habito-check w-4 h-4 accent-emerald-500">
-                    <span>Junta de Consultoría con Hermano</span>
+                    <span>Atención y avances de la Consultoría</span>
                 </label>
                 <label class="flex items-center space-x-3 bg-slate-900/60 p-2.5 rounded-xl border border-slate-700/50 cursor-pointer">
                     <input type="checkbox" class="habito-check w-4 h-4 accent-emerald-500">
@@ -152,15 +152,29 @@
     <script>
         let ultimoMensajeTexto = "";
 
+        // Función de Voz Mejorada (Busca voces en español y ajusta tono)
         function hablar(texto) {
             if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel(); // Cancelar locuciones previas
+                window.speechSynthesis.cancel();
                 const utterance = new SpeechSynthesisUtterance(texto);
-                utterance.lang = 'es-MX';
-                utterance.rate = 0.95;
-                utterance.pitch = 1.0;
+                
+                const voces = window.speechSynthesis.getVoices();
+                const vozSeleccionada = voces.find(v => v.lang.includes('es-MX') || v.lang.includes('es-US')) || voces.find(v => v.lang.includes('es'));
+                
+                if (vozSeleccionada) {
+                    utterance.voice = vozSeleccionada;
+                }
+
+                utterance.rate = 0.95; // Velocidad de lectura
+                utterance.pitch = 1.05; // Tono de voz ligero
                 window.speechSynthesis.speak(utterance);
             }
+        }
+
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.onvoiceschanged = () => {
+                window.speechSynthesis.getVoices();
+            };
         }
 
         function hablarMensajeActual() {
@@ -190,7 +204,7 @@
                 mensaje = "¡Buenos días/tardes! Es hora de levantarte. Haz 30 o 40 minutos de ejercicio para enviarle la señal a tu cuerpo de que ya amaneció. ¡Vamos con todo!";
             } else if (horas >= 19 && horas < 21) {
                 tag = "💼 Modo Consultoría e Inglés";
-                mensaje = "Es momento de construir tu libertad. Reúnete con tu hermano para revisar los contactos de la consultoría y dedica 30 minutos a repasar inglés.";
+                mensaje = "Es momento de atender la consultoría, no olvides a tus clientes ni tus prospectos. Dedica también 30 minutos a repasar tu inglés.";
             } else if (horas >= 3 && horas < 5) {
                 tag = "🚫☕ Alerta de Cafeína";
                 mensaje = "¡Atención! Corta la cafeína a partir de este momento. Cambia por agua o té de limón sin teína para que puedas dormir profundo al terminar el turno.";
